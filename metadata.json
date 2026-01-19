@@ -1,0 +1,5 @@
+{
+  "name": "Matematik Analiz Merkezi",
+  "description": "Fonksiyon analizi ve ikinci dereceden denklem çözümü için geliştirilmiş interaktif platform. Türevler, kritik noktalar ve grafiksel gösterimler içerir.",
+  "requestFramePermissions": []
+}
