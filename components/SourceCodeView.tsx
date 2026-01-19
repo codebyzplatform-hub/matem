@@ -1,8 +1,10 @@
 
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 const SourceCodeView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'quadratic' | 'analysis'>('quadratic');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = (searchParams.get('tab') as 'quadratic' | 'analysis') || 'quadratic';
   const [copied, setCopied] = useState(false);
 
   const quadraticCode = `#include <iostream>
@@ -123,55 +125,16 @@ int main() {
         cout << crit_points[i] << " ";
     }
     cout << endl;
-    for (int i = 0; i < crit_points.size(); i++) {
-        double pt = crit_points[i];
-        double second = f_double_prime(pt);
-        if (second > 0)
-            cout << "   x = " << pt << " yerel minimum (f'' > 0)" << endl;
-        else if (second < 0)
-            cout << "   x = " << pt << " yerel maksimum (f'' < 0)" << endl;
-        else
-            cout << "   x = " << pt << " belirsiz (f'' ˜ 0)" << endl;
-    }
-
-    cout << "\\nd) Ornek aralik incelemesi:" << endl;
-    double test_points[] = { -2.0, 0.0, 2.0 };
-    int test_size = 3;
-    for (int i = 0; i < test_size; i++) {
-        double tp = test_points[i];
-        double deriv = f_prime(tp);
-        if (deriv > 0)
-            cout << "   x = " << tp << " civarinda artan (f' > 0)" << endl;
-        else if (deriv < 0)
-            cout << "   x = " << tp << " civarinda azalan (f' < 0)" << endl;
-        else
-            cout << "   x = " << tp << " civarinda sabit (f' ˜ 0)" << endl;
-    }
-
-    vector<double> infl_points = find_inflection_candidates();
-    cout << "\\ne) Bukumleme noktalari (yaklasik): ";
-    for (int i = 0; i < infl_points.size(); i++) {
-        cout << infl_points[i] << " ";
-    }
-    cout << endl;
-
-    cout << "\\nf) Dikey asimptot yok (payda hic sifir olmaz)." << endl;
-    cout << "   Yatay asimptot: x ? ±8 icin f(x) ? 1 (y = 1)." << endl;
-    cout << "   Egik asimptot yok (derece ayni)." << endl;
-
-    cout << "\\ng) Onemli noktalar:" << endl;
-    cout << "   Eksen kesisimleri:" << endl;
-    cout << "   x = -1 icin f(-1) = 0 -> (-1, 0)" << endl;
-    cout << "   x = 0 icin f(0) = 1 -> (0, 1)" << endl;
-    cout << "   Kritik noktalar ve bükülme noktalari yukarida listelenmistir." << endl;
-    cout << "\\nGrafik cizimi icin bu noktalari isaretleyip, fonksiyonun" << endl;
-    cout << "arttigi/azaldigi ve y = 1 yatay asimptotu goz onune alinmalidir." << endl;
-
+    
     return 0;
 }`;
 
   const currentCode = activeTab === 'quadratic' ? quadraticCode : analysisCode;
   const currentFileName = activeTab === 'quadratic' ? 'quadratic_solver.cpp' : 'function_analysis.cpp';
+
+  const setActiveTab = (tab: 'quadratic' | 'analysis') => {
+    setSearchParams({ tab });
+  };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(currentCode);
@@ -181,33 +144,24 @@ int main() {
 
   const highlightCode = (code: string) => {
     return code.split('\n').map((line, i) => {
-      // Önce HTML karakterlerini kaçıralım (Injection ve stil bozulmasını önlemek için)
       let escaped = line
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-      // Ardından renklendirme kurallarını uygulayalım (Sıralama önemlidir!)
       let highlighted = escaped
-        // Temel Kelimeler (Anahtar Kelimeler)
         .replace(/\b(int|double|float|char|void|bool|long|short|unsigned|signed|const|static|extern|auto|register|volatile|struct|class|enum|union|typedef|if|else|switch|case|default|for|do|while|break|continue|goto|return|sizeof|typeid|typename|using|namespace|inline|virtual|friend|explicit|mutable|template|try|catch|throw|new|delete|operator|this|public|protected|private|std|vector|algorithm)\b/g, 
           '<span class="text-rose-400 font-bold">$1</span>')
-        // Preprocessor (Önişlemci) Komutları
         .replace(/(#include|#define|#if|#else|#elif|#endif|#pragma)/g, 
           '<span class="text-orange-400 font-bold">$1</span>')
-        // Standart Fonksiyonlar ve IO
         .replace(/\b(cout|cin|endl|Math|pow|abs|sqrt|push_back|size|begin|end|sort|max|min)\b/g, 
           '<span class="text-amber-300 font-bold">$1</span>')
-        // String Literalleri (Tırnak içindeki yazılar)
         .replace(/(&quot;.*?&quot;|\".*?\")/g, 
           '<span class="text-emerald-400 font-medium">$1</span>')
-        // Sayılar
         .replace(/\b(\d+(\.\d+)?)\b/g, 
           '<span class="text-sky-400 font-bold">$1</span>')
-        // Yorum Satırları
         .replace(/(\/\/.*)/g, 
           '<span class="text-slate-500 italic">$1</span>')
-        // include içindeki kütüphane isimleri ( <iostream> gibi )
         .replace(/(&lt;[a-zA-Z0-9_.]+&gt;)/g,
           '<span class="text-orange-300">$1</span>');
 
@@ -249,18 +203,17 @@ int main() {
       </div>
 
       <div className="bg-[#0d1117] rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-800 relative">
-        {/* Terminal Header */}
         <div className="bg-[#161b22] px-6 py-4 flex items-center justify-between border-b border-slate-800">
           <div className="flex space-x-2">
-            <div className="w-3 h-3 rounded-full bg-[#ff5f56] shadow-lg shadow-rose-500/20"></div>
-            <div className="w-3 h-3 rounded-full bg-[#ffbd2e] shadow-lg shadow-amber-500/20"></div>
-            <div className="w-3 h-3 rounded-full bg-[#27c93f] shadow-lg shadow-emerald-500/20"></div>
+            <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] font-mono">{currentFileName}</span>
             <button 
               onClick={copyToClipboard}
-              className="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-inner"
+              className="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all"
               title="Kodu Kopyala"
             >
               <i className={`fa-solid ${copied ? 'fa-check text-emerald-400' : 'fa-copy'} text-xs`}></i>
@@ -268,7 +221,6 @@ int main() {
           </div>
         </div>
 
-        {/* Code Body */}
         <div className="p-6 md:p-10 overflow-x-auto max-h-[600px] custom-scrollbar bg-[#0d1117]">
           <pre className="text-indigo-50 selection:bg-indigo-500/30">
             {highlightCode(currentCode)}
@@ -276,7 +228,6 @@ int main() {
         </div>
       </div>
 
-      {/* Info Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <h4 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-4 flex items-center">
