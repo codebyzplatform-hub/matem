@@ -9,5 +9,6 @@ export const PROFILE_DATA = {
   university: "İstanbul Kent Üniversitesi",
   department: "Bilgisayar Mühendisliği",
   assignmentTitle: "Matematik Ödevi – 1",
+  course: "Matematik 1 / Sınıf 1",
   year: "2026"
 };
