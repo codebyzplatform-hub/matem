@@ -117,14 +117,11 @@ int main() {
 
   const highlightCode = (code: string) => {
     return code.split('\n').map((line, i) => {
-      // Önce HTML karakterlerini kaçıralım
       let escaped = line
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-      // Tek geçişli (Single-pass) renklendirme için Regex
-      // Gruplar: 1: Yorum, 2: String, 3: Preprocessor, 4: Library, 5: Keywords, 6: Functions, 7: Numbers
       const masterRegex = /(\/\/.*)|(&quot;.*?&quot;|\".*?\")|(#\w+)|(&lt;[a-zA-Z0-9_.]+&gt;)|(\b(?:int|double|float|char|void|bool|long|short|unsigned|signed|const|static|extern|auto|register|volatile|struct|class|enum|union|typedef|if|else|switch|case|default|for|do|while|break|continue|goto|return|sizeof|typeid|typename|using|namespace|inline|virtual|friend|explicit|mutable|template|try|catch|throw|new|delete|operator|this|public|protected|private|std|vector|algorithm)\b)|(\b(?:cout|cin|endl|Math|pow|abs|sqrt|push_back|size|begin|end|sort|max|min)\b)|(\b\d+(?:\.\d+)?\b)/g;
 
       const highlighted = escaped.replace(masterRegex, (match, m1, m2, m3, m4, m5, m6, m7) => {
@@ -140,8 +137,8 @@ int main() {
 
       return (
         <div key={i} className="flex group">
-          <span className="w-10 text-slate-600 select-none opacity-40 text-right pr-4 text-[10px] md:text-xs font-mono">{i + 1}</span>
-          <span className="flex-1 whitespace-pre font-mono text-[11px] md:text-sm" dangerouslySetInnerHTML={{ __html: highlighted || ' ' }} />
+          <span className="w-10 text-slate-400 dark:text-slate-600 select-none opacity-50 text-right pr-4 text-[10px] md:text-xs font-mono">{i + 1}</span>
+          <span className="flex-1 whitespace-pre font-mono text-[11px] md:text-sm text-slate-700 dark:text-indigo-50" dangerouslySetInnerHTML={{ __html: highlighted || ' ' }} />
         </div>
       );
     });
@@ -150,27 +147,39 @@ int main() {
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in zoom-in-95 duration-500">
       <style>{`
-        .cc-key { color: #fb7185; font-weight: bold; }
-        .cc-pre { color: #fb923c; font-weight: bold; }
-        .cc-func { color: #fcd34d; font-weight: bold; }
-        .cc-str { color: #34d399; }
-        .cc-num { color: #38bdf8; font-weight: bold; }
-        .cc-com { color: #64748b; font-style: italic; }
-        .cc-lib { color: #fdba74; }
+        /* Light Mode Syntax Colors - Professional & High Contrast */
+        .cc-key { color: #d32f2f; font-weight: 700; }
+        .cc-pre { color: #e65100; font-weight: 700; }
+        .cc-func { color: #7b1fa2; font-weight: 700; }
+        .cc-str { color: #2e7d32; }
+        .cc-num { color: #1565c0; font-weight: 700; }
+        .cc-com { color: #94a3b8; font-style: italic; }
+        .cc-lib { color: #ef6c00; }
+
+        /* Dark Mode Syntax Colors - Vibrant & Glowing */
+        .dark .cc-key { color: #fb7185; }
+        .dark .cc-pre { color: #fb923c; }
+        .dark .cc-func { color: #c084fc; }
+        .dark .cc-str { color: #34d399; }
+        .dark .cc-num { color: #38bdf8; }
+        .dark .cc-com { color: #64748b; }
+        .dark .cc-lib { color: #fdba74; }
         
         .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #0d1117; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; border: 2px solid #0d1117; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #484f58; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #30363d; border: 2px solid #0d1117; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #484f58; }
       `}</style>
 
       {/* Tab Switcher */}
-      <div className="flex p-1 bg-slate-200 dark:bg-slate-800 rounded-2xl w-fit mx-auto border border-slate-300 dark:border-slate-700 shadow-sm">
+      <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl w-fit mx-auto border border-slate-200 dark:border-slate-700 shadow-sm">
         <button
           onClick={() => setActiveTab('quadratic')}
           className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
             activeTab === 'quadratic'
-              ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-md scale-105'
+              ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm scale-105'
               : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
           }`}
         >
@@ -181,7 +190,7 @@ int main() {
           onClick={() => setActiveTab('analysis')}
           className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
             activeTab === 'analysis'
-              ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-md scale-105'
+              ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm scale-105'
               : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
           }`}
         >
@@ -190,27 +199,29 @@ int main() {
         </button>
       </div>
 
-      <div className="bg-[#0d1117] rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-800 relative">
-        <div className="bg-[#161b22] px-6 py-4 flex items-center justify-between border-b border-slate-800">
+      <div className="bg-white dark:bg-[#0d1117] rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 relative">
+        {/* Terminal Header */}
+        <div className="bg-slate-50 dark:bg-[#161b22] px-6 py-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
           <div className="flex space-x-2">
-            <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-            <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-            <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#ff5f56] shadow-sm"></div>
+            <div className="w-3 h-3 rounded-full bg-[#ffbd2e] shadow-sm"></div>
+            <div className="w-3 h-3 rounded-full bg-[#27c93f] shadow-sm"></div>
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] font-mono">{currentFileName}</span>
+            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] font-mono">{currentFileName}</span>
             <button 
               onClick={copyToClipboard}
-              className="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+              className="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all border border-slate-200 dark:border-slate-700 shadow-sm"
               title="Kodu Kopyala"
             >
-              <i className={`fa-solid ${copied ? 'fa-check text-emerald-400' : 'fa-copy'} text-xs`}></i>
+              <i className={`fa-solid ${copied ? 'fa-check text-emerald-500' : 'fa-copy'} text-xs`}></i>
             </button>
           </div>
         </div>
 
-        <div className="p-6 md:p-10 overflow-x-auto max-h-[600px] custom-scrollbar bg-[#0d1117]">
-          <pre className="text-indigo-50 selection:bg-indigo-500/30">
+        {/* Code Content Area */}
+        <div className="p-6 md:p-10 overflow-x-auto max-h-[600px] custom-scrollbar bg-white dark:bg-[#0d1117]">
+          <pre className="selection:bg-indigo-500/10">
             {highlightCode(currentCode)}
           </pre>
         </div>
