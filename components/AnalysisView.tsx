@@ -15,7 +15,7 @@ const AnalysisView: React.FC = () => {
         </div>
         
         <div className="relative z-10">
-          <h2 className="text-2xl md:text-3xl font-black text-slate-800 dark:text-white mb-2">Funksiya Tahlili</h2>
+          <h2 className="text-2xl md:text-3xl font-black text-slate-800 dark:text-white mb-2">Fonksiyon Analizi</h2>
           <div className="bg-indigo-50 dark:bg-indigo-950/30 inline-block px-4 py-2 rounded-xl mb-8">
             <span className="text-indigo-600 dark:text-indigo-400 font-serif text-xl md:text-2xl font-black italic">
               f(x) = (x + 1)² / (1 + x²)
@@ -27,19 +27,19 @@ const AnalysisView: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Parametrlar */}
+        {/* Parametreler */}
         <section className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800">
           <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center">
             <i className="fa-solid fa-list-check mr-3 text-indigo-500"></i>
-            Asosiy Parametrlar
+            Temel Parametreler
           </h3>
           <div className="space-y-3">
             {[
-              { label: 'Aniqlanish sohasi', value: '(-∞, +∞)' },
-              { label: 'Juft/Toqligi', value: 'Hech biri' },
-              { label: 'Y-kesishishi', value: '(0, 1)' },
-              { label: 'X-kesishishi', value: '(-1, 0)' },
-              { label: 'Gorizontal asimptota', value: 'y = 1' },
+              { label: 'Tanım Kümesi', value: '(-∞, +∞)' },
+              { label: 'Çift/Teklik', value: 'Hiçbiri' },
+              { label: 'Y-Kesişimi', value: '(0, 1)' },
+              { label: 'X-Kesişimi', value: '(-1, 0)' },
+              { label: 'Yatay Asimptot', value: 'y = 1' },
             ].map((item, idx) => (
               <div key={idx} className="flex justify-between items-center p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">
                 <span className="text-xs font-bold text-slate-500">{item.label}</span>
@@ -53,7 +53,7 @@ const AnalysisView: React.FC = () => {
         <section className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800">
           <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center">
             <i className="fa-solid fa-arrow-up-right-dots mr-3 text-rose-500"></i>
-            Kritik Nuqtalar
+            Kritik Noktalar
           </h3>
           <div className="space-y-4">
             {criticalPoints.map((pt, idx) => (
@@ -83,13 +83,13 @@ const AnalysisView: React.FC = () => {
         <section className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800">
           <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center">
             <i className="fa-solid fa-wave-square mr-3 text-amber-500"></i>
-            Egilish Nuqtalari
+            Bükülme Noktaları
           </h3>
           <div className="grid grid-cols-1 gap-3">
             {inflectionPoints.map((pt, idx) => (
               <div key={idx} className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 flex justify-between items-center">
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase mb-1 tracking-wider">Nuqta {idx + 1}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase mb-1 tracking-wider">Nokta {idx + 1}</p>
                   <p className="font-black text-lg">x ≈ {pt.x.toFixed(2)}</p>
                 </div>
                 <div className="text-right">

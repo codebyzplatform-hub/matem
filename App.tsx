@@ -35,8 +35,8 @@ const App: React.FC = () => {
 
   const navItems = [
     { id: View.FUNCTION, label: 'Analiz', icon: 'fa-chart-line' },
-    { id: View.QUADRATIC, label: 'Tenglama', icon: 'fa-superscript' },
-    { id: View.CODE, label: 'Kod', icon: 'fa-code' },
+    { id: View.QUADRATIC, label: 'Denklem', icon: 'fa-superscript' },
+    { id: View.CODE, label: 'Kod (C++)', icon: 'fa-code' },
     { id: View.PROFILE, label: 'Profil', icon: 'fa-user' },
   ];
 
@@ -58,7 +58,7 @@ const App: React.FC = () => {
                 <button
                   key={item.id}
                   onClick={() => setActiveView(item.id)}
-                  className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                  className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
                     activeView === item.id
                       ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm ring-1 ring-slate-200 dark:ring-slate-600'
                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -101,7 +101,7 @@ const App: React.FC = () => {
               }`}
             >
               <i className={`fa-solid ${item.icon} text-xl`}></i>
-              <span className="text-[10px] font-black uppercase tracking-tighter">{item.label}</span>
+              <span className="text-[9px] font-black uppercase tracking-tighter">{item.label}</span>
             </button>
           ))}
         </div>
@@ -113,8 +113,8 @@ const App: React.FC = () => {
           <i className="fa-solid fa-sigma"></i>
           <i className="fa-solid fa-pi"></i>
         </div>
-        <p>Matematik Analiz Platformasi</p>
-        <p className="mt-1">© 2024 {PROFILE_DATA.name}</p>
+        <p>Matematiksel Analiz Platformu</p>
+        <p className="mt-1">© 2026 {PROFILE_DATA.name}</p>
       </footer>
     </div>
   );
