@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 const SourceCodeView: React.FC = () => {
@@ -87,37 +87,10 @@ vector<double> find_critical_points() {
     return unique_points;
 }
 
-vector<double> find_inflection_candidates() {
-    vector<double> points;
-    double step = 0.01;
-    for (double x = -10; x <= 10; x += step) {
-        if (abs(f_double_prime(x)) < 0.01) {
-            points.push_back(x);
-        }
-    }
-    // Benzer noktalari birlestir
-    vector<double> unique_points;
-    double tolerance = 0.1;
-    for (int i = 0; i < points.size(); ++i) {
-        if (i == 0 || points[i] - points[i - 1] > tolerance) {
-            unique_points.push_back(points[i]);
-        }
-    }
-    return unique_points;
-}
-
 int main() {
     cout << "f(x) = (x+1)^2 / (1+x^2) fonksiyonu analizi" << endl;
     cout << "===========================================" << endl;
-
     cout << "\\na) Tanim kumesi: Tum reel sayilar (payda her zaman pozitif)." << endl;
-    cout << "   f(-x) = " << f(-1) << ", f(x) = " << f(1) << endl;
-    cout << "   f(-x) != f(x) ve f(-x) != -f(x) oldugu icin cift veya tek degil." << endl;
-
-    double x_sample = 1.0;
-    cout << "\\nb) Ornek bir noktada turevler:" << endl;
-    cout << "   f'(" << x_sample << ") ˜ " << f_prime(x_sample) << endl;
-    cout << "   f''(" << x_sample << ") ˜ " << f_double_prime(x_sample) << endl;
 
     vector<double> crit_points = find_critical_points();
     cout << "\\nc) Kritik noktalar (yaklasik): ";
@@ -149,26 +122,37 @@ int main() {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-      let highlighted = escaped
-        .replace(/\b(int|double|float|char|void|bool|long|short|unsigned|signed|const|static|extern|auto|register|volatile|struct|class|enum|union|typedef|if|else|switch|case|default|for|do|while|break|continue|goto|return|sizeof|typeid|typename|using|namespace|inline|virtual|friend|explicit|mutable|template|try|catch|throw|new|delete|operator|this|public|protected|private|std|vector|algorithm)\b/g, 
-          '<span class="text-rose-400 font-bold">$1</span>')
-        .replace(/(#include|#define|#if|#else|#elif|#endif|#pragma)/g, 
-          '<span class="text-orange-400 font-bold">$1</span>')
-        .replace(/\b(cout|cin|endl|Math|pow|abs|sqrt|push_back|size|begin|end|sort|max|min)\b/g, 
-          '<span class="text-amber-300 font-bold">$1</span>')
-        .replace(/(&quot;.*?&quot;|\".*?\")/g, 
-          '<span class="text-emerald-400 font-medium">$1</span>')
-        .replace(/\b(\d+(\.\d+)?)\b/g, 
-          '<span class="text-sky-400 font-bold">$1</span>')
-        .replace(/(\/\/.*)/g, 
-          '<span class="text-slate-500 italic">$1</span>')
-        .replace(/(&lt;[a-zA-Z0-9_.]+&gt;)/g,
-          '<span class="text-orange-300">$1</span>');
+      // Özel belirteçler kullanarak çakışmaları önlüyoruz
+      let h = escaped;
+
+      // 1. Strings
+      h = h.replace(/(&quot;.*?&quot;|\".*?\")/g, '<span class="cc-str">$1</span>');
+      
+      // 2. Preprocessor
+      h = h.replace(/(#include|#define|#if|#else|#elif|#endif|#pragma)/g, '<span class="cc-pre">$1</span>');
+      
+      // 3. Keywords
+      h = h.replace(/\b(int|double|float|char|void|bool|long|short|unsigned|signed|const|static|extern|auto|register|volatile|struct|class|enum|union|typedef|if|else|switch|case|default|for|do|while|break|continue|goto|return|sizeof|typeid|typename|using|namespace|inline|virtual|friend|explicit|mutable|template|try|catch|throw|new|delete|operator|this|public|protected|private|std|vector|algorithm)\b/g, 
+        '<span class="cc-key">$1</span>');
+
+      // 4. Numbers (Harf içermeyen, sadece rakam olanları yakala - HTML tag içindekilere dokunma)
+      // Bu regex sadece kelime sınırları içindeki sayıları hedef alır
+      h = h.replace(/\b(\d+(\.\d+)?)\b(?![^<]*>)/g, '<span class="cc-num">$1</span>');
+
+      // 5. IO & Functions
+      h = h.replace(/\b(cout|cin|endl|Math|pow|abs|sqrt|push_back|size|begin|end|sort|max|min)\b/g, 
+        '<span class="cc-func">$1</span>');
+
+      // 6. Comments
+      h = h.replace(/(\/\/.*)/g, '<span class="cc-com">$1</span>');
+
+      // 7. Library Names
+      h = h.replace(/(&lt;[a-zA-Z0-9_.]+&gt;)/g, '<span class="cc-lib">$1</span>');
 
       return (
         <div key={i} className="flex group">
           <span className="w-10 text-slate-600 select-none opacity-40 text-right pr-4 text-[10px] md:text-xs font-mono">{i + 1}</span>
-          <span className="flex-1 whitespace-pre font-mono text-[11px] md:text-sm" dangerouslySetInnerHTML={{ __html: highlighted || ' ' }} />
+          <span className="flex-1 whitespace-pre font-mono text-[11px] md:text-sm" dangerouslySetInnerHTML={{ __html: h || ' ' }} />
         </div>
       );
     });
@@ -176,6 +160,21 @@ int main() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in zoom-in-95 duration-500">
+      <style>{`
+        .cc-key { color: #fb7185; font-weight: bold; }
+        .cc-pre { color: #fb923c; font-weight: bold; }
+        .cc-func { color: #fcd34d; font-weight: bold; }
+        .cc-str { color: #34d399; }
+        .cc-num { color: #38bdf8; font-weight: bold; }
+        .cc-com { color: #64748b; font-style: italic; }
+        .cc-lib { color: #fdba74; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0d1117; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; border: 2px solid #0d1117; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #484f58; }
+      `}</style>
+
       {/* Tab Switcher */}
       <div className="flex p-1 bg-slate-200 dark:bg-slate-800 rounded-2xl w-fit mx-auto border border-slate-300 dark:border-slate-700 shadow-sm">
         <button
@@ -252,24 +251,6 @@ int main() {
           </p>
         </div>
       </div>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #0d1117;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #30363d;
-          border-radius: 10px;
-          border: 2px solid #0d1117;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #484f58;
-        }
-      `}</style>
     </div>
   );
 };
