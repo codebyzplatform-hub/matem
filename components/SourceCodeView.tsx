@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 const SourceCodeView: React.FC = () => {
@@ -117,42 +117,31 @@ int main() {
 
   const highlightCode = (code: string) => {
     return code.split('\n').map((line, i) => {
+      // Önce HTML karakterlerini kaçıralım
       let escaped = line
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-      // Özel belirteçler kullanarak çakışmaları önlüyoruz
-      let h = escaped;
+      // Tek geçişli (Single-pass) renklendirme için Regex
+      // Gruplar: 1: Yorum, 2: String, 3: Preprocessor, 4: Library, 5: Keywords, 6: Functions, 7: Numbers
+      const masterRegex = /(\/\/.*)|(&quot;.*?&quot;|\".*?\")|(#\w+)|(&lt;[a-zA-Z0-9_.]+&gt;)|(\b(?:int|double|float|char|void|bool|long|short|unsigned|signed|const|static|extern|auto|register|volatile|struct|class|enum|union|typedef|if|else|switch|case|default|for|do|while|break|continue|goto|return|sizeof|typeid|typename|using|namespace|inline|virtual|friend|explicit|mutable|template|try|catch|throw|new|delete|operator|this|public|protected|private|std|vector|algorithm)\b)|(\b(?:cout|cin|endl|Math|pow|abs|sqrt|push_back|size|begin|end|sort|max|min)\b)|(\b\d+(?:\.\d+)?\b)/g;
 
-      // 1. Strings
-      h = h.replace(/(&quot;.*?&quot;|\".*?\")/g, '<span class="cc-str">$1</span>');
-      
-      // 2. Preprocessor
-      h = h.replace(/(#include|#define|#if|#else|#elif|#endif|#pragma)/g, '<span class="cc-pre">$1</span>');
-      
-      // 3. Keywords
-      h = h.replace(/\b(int|double|float|char|void|bool|long|short|unsigned|signed|const|static|extern|auto|register|volatile|struct|class|enum|union|typedef|if|else|switch|case|default|for|do|while|break|continue|goto|return|sizeof|typeid|typename|using|namespace|inline|virtual|friend|explicit|mutable|template|try|catch|throw|new|delete|operator|this|public|protected|private|std|vector|algorithm)\b/g, 
-        '<span class="cc-key">$1</span>');
-
-      // 4. Numbers (Harf içermeyen, sadece rakam olanları yakala - HTML tag içindekilere dokunma)
-      // Bu regex sadece kelime sınırları içindeki sayıları hedef alır
-      h = h.replace(/\b(\d+(\.\d+)?)\b(?![^<]*>)/g, '<span class="cc-num">$1</span>');
-
-      // 5. IO & Functions
-      h = h.replace(/\b(cout|cin|endl|Math|pow|abs|sqrt|push_back|size|begin|end|sort|max|min)\b/g, 
-        '<span class="cc-func">$1</span>');
-
-      // 6. Comments
-      h = h.replace(/(\/\/.*)/g, '<span class="cc-com">$1</span>');
-
-      // 7. Library Names
-      h = h.replace(/(&lt;[a-zA-Z0-9_.]+&gt;)/g, '<span class="cc-lib">$1</span>');
+      const highlighted = escaped.replace(masterRegex, (match, m1, m2, m3, m4, m5, m6, m7) => {
+        if (m1) return `<span class="cc-com">${match}</span>`;
+        if (m2) return `<span class="cc-str">${match}</span>`;
+        if (m3) return `<span class="cc-pre">${match}</span>`;
+        if (m4) return `<span class="cc-lib">${match}</span>`;
+        if (m5) return `<span class="cc-key">${match}</span>`;
+        if (m6) return `<span class="cc-func">${match}</span>`;
+        if (m7) return `<span class="cc-num">${match}</span>`;
+        return match;
+      });
 
       return (
         <div key={i} className="flex group">
           <span className="w-10 text-slate-600 select-none opacity-40 text-right pr-4 text-[10px] md:text-xs font-mono">{i + 1}</span>
-          <span className="flex-1 whitespace-pre font-mono text-[11px] md:text-sm" dangerouslySetInnerHTML={{ __html: h || ' ' }} />
+          <span className="flex-1 whitespace-pre font-mono text-[11px] md:text-sm" dangerouslySetInnerHTML={{ __html: highlighted || ' ' }} />
         </div>
       );
     });
