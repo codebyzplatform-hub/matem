@@ -1,5 +1,5 @@
 {
-  "name": "matematik-analiz-merkezi",
+  "name": "matematik-analiz-markazi",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,9 @@
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "recharts": "2.12.7"
+    "recharts": "2.12.7",
+    "@vitejs/plugin-react": "^5.1.2",
+    "vite": "^7.3.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
