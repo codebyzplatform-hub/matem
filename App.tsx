@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 import AnalysisView from './components/AnalysisView';
 import QuadraticView from './components/QuadraticView';
 import ProfileView from './components/ProfileView';
+import SourceCodeView from './components/SourceCodeView';
 import { PROFILE_DATA } from './consts';
 
 enum View {
   FUNCTION = 'FUNCTION',
   QUADRATIC = 'QUADRATIC',
+  CODE = 'CODE',
   PROFILE = 'PROFILE'
 }
 
@@ -34,6 +36,7 @@ const App: React.FC = () => {
   const navItems = [
     { id: View.FUNCTION, label: 'Analiz', icon: 'fa-chart-line' },
     { id: View.QUADRATIC, label: 'Tenglama', icon: 'fa-superscript' },
+    { id: View.CODE, label: 'Kod', icon: 'fa-code' },
     { id: View.PROFILE, label: 'Profil', icon: 'fa-user' },
   ];
 
@@ -81,6 +84,7 @@ const App: React.FC = () => {
         <div className="transition-opacity duration-300">
           {activeView === View.FUNCTION && <AnalysisView />}
           {activeView === View.QUADRATIC && <QuadraticView />}
+          {activeView === View.CODE && <SourceCodeView />}
           {activeView === View.PROFILE && <ProfileView />}
         </div>
       </main>
